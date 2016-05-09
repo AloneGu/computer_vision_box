@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img1 = cv2.imread('../data/box.png',0)          # queryImage
-img2 = cv2.imread('../data/box_in_scene.png',0) # trainImage
+img1 = cv2.imread('../data/y.JPG',0) # queryImage
+img2 = cv2.imread('../data/t.JPG',0) # trainImage
 
 # Initiate SIFT detector
 sift = cv2.SIFT()
@@ -84,7 +84,7 @@ def drawMatches(img1, kp1, img2, kp2, matches):
     return out
 
 # only show top 20 matches
-img3 = drawMatches(img1,kp1,img2,kp2,matches[:20])
+img3 = drawMatches(img1,kp1,img2,kp2,matches[:5])
 
 # Show the image
 cv2.imshow('Matched Features', img3)
