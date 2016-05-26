@@ -42,11 +42,13 @@ class TrainingDataGenerator(object):
 
     def run(self):
         for v in self.video_files:
-            self.process_one_video(v)
-        self.save_org_result()
-        svm_cls = HogSvmProcessor(self.work_img_dir,self.old_pos_dict,self.old_neg_dict)
+            self.process_one_video(v) # process video, generate imgs and original boxes
+
+        svm_cls = HogSvmProcessor(self.work_img_dir,self.old_pos_dict,self.old_neg_dict) # train a svm model to remove wrong training data
         svm_cls.run()
         self.new_pos_dict,self.new_neg_dict = svm_cls.return_new_res()
+
+        self.save_org_result() # save result
 
     def process_one_video(self, v):
         fn = os.path.basename(v)
