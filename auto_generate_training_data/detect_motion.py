@@ -4,6 +4,8 @@ from random import randint
 import numpy as np
 import cv2
 
+from hog_svm_cls import HogSvmProcessor
+
 VIDEO_DIR = '../video_data'
 OUTPUT_DIR = '/home/jac/Documents/work_tmp/'
 PLACEMENT = '8100224'
@@ -15,12 +17,12 @@ NEG_IMG_WIDTH = 64
 
 
 class TrainingDataGenerator(object):
-    def __init__(self, placement, date_time):
+    def __init__(self, placement, date_time, output_dir, video_dir):
         self.placement = placement
         self.date_time = date_time
 
         # prepare work dir
-        self.work_dir = os.path.join(OUTPUT_DIR, self.placement + '_' + self.date_time)
+        self.work_dir = os.path.join(output_dir, self.placement + '_' + self.date_time)
         self.work_img_dir = os.path.join(self.work_dir, 'imgs')
         self.check_img_dir = os.path.join(self.work_dir, 'check_imgs')
         if not os.path.exists(self.work_dir):
@@ -35,13 +37,16 @@ class TrainingDataGenerator(object):
         self.new_pos_dict = {}
         self.new_neg_dict = {}
 
-        self.video_files = glob.glob(os.path.join(VIDEO_DIR, '*.mp4'))
+        self.video_files = glob.glob(os.path.join(video_dir, '*.mp4'))
         print self.video_files
 
     def run(self):
         for v in self.video_files:
             self.process_one_video(v)
         self.save_org_result()
+        svm_cls = HogSvmProcessor(self.work_img_dir,self.old_pos_dict,self.old_neg_dict)
+        svm_cls.run()
+        self.new_pos_dict,self.new_neg_dict = svm_cls.return_new_res()
 
     def process_one_video(self, v):
         fn = os.path.basename(v)
@@ -104,8 +109,12 @@ class TrainingDataGenerator(object):
             json.dump(self.old_pos_dict, f)
         with open("%s/old_neg.txt" % self.work_dir, "w") as f:
             json.dump(self.old_neg_dict, f)
+        with open("%s/new_pos.txt" % self.work_dir, "w") as f:
+            json.dump(self.new_pos_dict, f)
+        with open("%s/new_neg.txt" % self.work_dir, "w") as f:
+            json.dump(self.new_neg_dict, f)
 
 
 if __name__ == '__main__':
-    t = TrainingDataGenerator(PLACEMENT, PROCESS_DATE)
+    t = TrainingDataGenerator(PLACEMENT, PROCESS_DATE, OUTPUT_DIR, VIDEO_DIR)
     t.run()
