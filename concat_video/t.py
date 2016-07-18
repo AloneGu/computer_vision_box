@@ -20,16 +20,22 @@ v_len = min(len(imgs1), len(imgs2))
 print len(imgs1), len(imgs2),type(imgs1[0]), imgs1[0].shape
 w, h, _ = imgs1[0].shape
 fps = 24
-fcc = cv2.cv.CV_FOURCC('F','L','V','1')
-videoWriter = cv2.VideoWriter('./res.flv', fcc, fps, (w, h))
+
+#videoWriter = cv2.VideoWriter('./res.mp4', -1, fps, (w, h))
+
 for i in range(v_len):
     try:
         tmp_img = imgs1[i]
         tmp_img[:, h / 2:, :] = imgs2[i][:, h / 2:, :]
         cv2.imshow('t', tmp_img)
         cv2.waitKey(1000 / 24)
-        videoWriter.write(tmp_img)
+        cv2.imwrite('./imgs/img_{}.jpg'.format(i),tmp_img)
     except:
         pass
 cv2.destroyAllWindows()
 
+"""
+to get video
+apt-get install ffmpeg
+ffmpeg -i ./imgs/img_%d.jpg -c:v libx264 -r 24 -pix_fmt yuv420p out.mp4
+"""
