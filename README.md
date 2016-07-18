@@ -21,3 +21,7 @@
         python detect_motion.py
 
         you will see result in OUTPUT_DIR
+
+## recombine part of different videos in same place
+
+        check concat_video
